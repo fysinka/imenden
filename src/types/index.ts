@@ -204,6 +204,7 @@ export interface FolkTradition {
   title: string;
   content?: string;
   proverb?: string;
+  link?: string;
   category: string;
 }
 

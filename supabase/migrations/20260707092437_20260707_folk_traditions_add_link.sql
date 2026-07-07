@@ -1,0 +1,1 @@
+ALTER TABLE folk_traditions ADD COLUMN IF NOT EXISTS link text;

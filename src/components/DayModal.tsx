@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { X, Star, Church, Globe, BookOpen, User2, Feather, Flame, Sparkles } from 'lucide-react';
+import { X, Star, Church, Globe, BookOpen, User2, Feather, Flame, Sparkles, ArrowRight } from 'lucide-react';
 import { DayData } from '../types';
 
 
@@ -172,6 +172,16 @@ export default function DayModal({ date, data, loading, onClose }: Props) {
                           <blockquote className="mt-2 pl-3 border-l-2 border-orange-300 text-gray-500 text-xs italic">
                             „{t.proverb}"
                           </blockquote>
+                        )}
+                        {t.link && (
+                          <a
+                            href={t.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 mt-3 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white text-xs font-semibold rounded-xl transition-colors"
+                          >
+                            Към статията <ArrowRight size={13} />
+                          </a>
                         )}
                       </div>
                     ))}
