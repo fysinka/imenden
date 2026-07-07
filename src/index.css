@@ -1,0 +1,233 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: #1a1a1a;
+  --color-accent-yellow: #F59E0B;
+  --color-accent-orange: #EA580C;
+  --color-accent-red: #DC2626;
+  --color-warm-white: #FFFBF5;
+  --color-cream: #FEF7E6;
+  --color-light-orange: #FFF7ED;
+  --gradient-brand: linear-gradient(135deg, #F59E0B 0%, #EA580C 100%);
+  --gradient-brand-soft: linear-gradient(135deg, #FCD34D 0%, #FB923C 100%);
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-serif: 'Playfair Display', Georgia, serif;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-warm-white);
+  color: var(--color-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Bulgarian Embroidery SVG as background patterns */
+.bg-embroidery {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath d='M0 30 L15 20 L30 30 L15 40 Z' fill='none' stroke='%23F59E0B' stroke-width='1.5' opacity='0.3'/%3E%3Cpath d='M30 30 L45 20 L60 30 L45 40 Z' fill='none' stroke='%23EA580C' stroke-width='1.5' opacity='0.3'/%3E%3Cpath d='M15 10 L30 0 L45 10 L30 20 Z' fill='none' stroke='%23DC2626' stroke-width='1' opacity='0.2'/%3E%3Cpath d='M15 50 L30 40 L45 50 L30 60 Z' fill='none' stroke='%23F59E0B' stroke-width='1' opacity='0.3'/%3E%3C/svg%3E");
+  background-size: 60px 60px;
+}
+
+.bg-embroidery-side {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='80' viewBox='0 0 30 80'%3E%3Cpath d='M15 0 L25 10 L15 20 L5 10 Z' fill='none' stroke='%23F59E0B' stroke-width='1.5' opacity='0.5'/%3E%3Cpath d='M15 20 L25 30 L15 40 L5 30 Z' fill='none' stroke='%23EA580C' stroke-width='1.5' opacity='0.5'/%3E%3Cpath d='M15 40 L25 50 L15 60 L5 50 Z' fill='none' stroke='%23DC2626' stroke-width='1.5' opacity='0.4'/%3E%3Cpath d='M15 60 L25 70 L15 80 L5 70 Z' fill='none' stroke='%23F59E0B' stroke-width='1.5' opacity='0.5'/%3E%3Ccircle cx='15' cy='10' r='2' fill='%23DC2626' opacity='0.3'/%3E%3Ccircle cx='15' cy='50' r='2' fill='%23F59E0B' opacity='0.4'/%3E%3C/svg%3E");
+  background-size: 30px 80px;
+}
+
+.bg-embroidery-dark {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath d='M0 30 L15 20 L30 30 L15 40 Z' fill='none' stroke='%23FCD34D' stroke-width='1.5' opacity='0.4'/%3E%3Cpath d='M30 30 L45 20 L60 30 L45 40 Z' fill='none' stroke='%23FB923C' stroke-width='1.5' opacity='0.4'/%3E%3Ccircle cx='30' cy='30' r='3' fill='%23FCD34D' opacity='0.2'/%3E%3C/svg%3E");
+  background-size: 60px 60px;
+}
+
+.border-embroidery {
+  border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath d='M0 20 L10 10 L20 20 L10 30 Z' fill='none' stroke='%23F59E0B' stroke-width='2'/%3E%3Cpath d='M20 20 L30 10 L40 20 L30 30 Z' fill='none' stroke='%23EA580C' stroke-width='2'/%3E%3C/svg%3E") 30 round;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--color-cream); }
+::-webkit-scrollbar-thumb { background: linear-gradient(to bottom, #F59E0B, #EA580C); border-radius: 4px; }
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+@keyframes slideInLeft {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.animate-fadeIn { animation: fadeIn 0.5s ease forwards; }
+.animate-slideInRight { animation: slideInRight 0.3s ease forwards; }
+.animate-slideInLeft { animation: slideInLeft 0.3s ease forwards; }
+.animate-scaleIn { animation: scaleIn 0.3s ease forwards; }
+.animate-float { animation: float 3s ease-in-out infinite; }
+
+.skeleton {
+  background: linear-gradient(90deg, #f0e6d8 25%, #f8f4ee 50%, #f0e6d8 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Focus states */
+*:focus-visible {
+  outline: 2px solid var(--color-accent-orange);
+  outline-offset: 2px;
+}
+
+/* Typography */
+.font-serif { font-family: var(--font-serif); }
+
+/* Product card styling */
+.product-card {
+  border-radius: 16px;
+  background: white;
+  border: 2px solid #1a1a1a;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+}
+.product-card-image {
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-bottom: 2px solid #1a1a1a;
+}
+.product-card-footer {
+  background: #1a1a1a;
+  padding: 12px 16px;
+}
+
+/* Section cards */
+.section-card {
+  background: white;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+}
+
+/* Navigation button */
+.nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: #1a1a1a;
+  color: white;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+.nav-btn:hover {
+  background: #2d2d2d;
+  transform: translateY(-1px);
+}
+.nav-btn-active {
+  background: linear-gradient(135deg, #F59E0B 0%, #EA580C 100%);
+  color: white;
+}
+
+/* Cart badge */
+.cart-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: linear-gradient(135deg, #F59E0B 0%, #EA580C 100%);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Modal backdrop */
+.modal-backdrop {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+}
+
+/* Recommendation cards */
+.rec-card {
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+.rec-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+
+/* Name day highlight card */
+.highlight-card {
+  background: linear-gradient(135deg, #FEF3C7 0%, #FED7AA 100%);
+  border: 2px solid #F59E0B;
+  border-radius: 20px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+.highlight-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(to right, #F59E0B, #EA580C, #DC2626);
+}
+
+/* Horizontal scroll container */
+.scroll-container {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+}
+.scroll-container::-webkit-scrollbar {
+  height: 6px;
+}
+.scroll-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(to right, #F59E0B, #EA580C);
+  border-radius: 3px;
+}
+
+/* Print styles */
+@media print {
+  .no-print { display: none !important; }
+}
