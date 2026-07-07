@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Search, X, Star, Sparkles, Calendar as CalendarIcon, BookOpen } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Search, X, Star, Sparkles, Calendar as CalendarIcon, BookOpen, Globe, User2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { NameDay, Holiday, ChurchHoliday, MoveableFeast, DayData } from '../types';
+import { NameDay, Holiday, ChurchHoliday, MoveableFeast, HistoricalEvent, FamousPerson, DayData } from '../types';
 import DayModal from '../components/DayModal';
 
 const BG_MONTHS = ['Януари','Февруари','Март','Април','Май','Юни','Юли','Август','Септември','Октомври','Ноември','Декември'];
@@ -29,6 +29,8 @@ export default function CalendarPage() {
   const [holidays, setHolidays] = useState<Record<string, Holiday[]>>({});
   const [churchHolidays, setChurchHolidays] = useState<Record<string, ChurchHoliday[]>>({});
   const [moveableFeasts, setMoveableFeasts] = useState<Record<string, MoveableFeast[]>>({});
+  const [histEvents, setHistEvents] = useState<Record<string, HistoricalEvent[]>>({});
+  const [famousPeople, setFamousPeople] = useState<Record<string, FamousPerson[]>>({});
   const [searchDate, setSearchDate] = useState('');
   const [searchName, setSearchName] = useState('');
   const [searchResults, setSearchResults] = useState<NameDay[]>([]);
@@ -42,6 +44,8 @@ export default function CalendarPage() {
       supabase.from('holidays').select('*').like('date_key', `${monthStr}-%`),
       supabase.from('church_holidays').select('*').like('date_key', `${monthStr}-%`),
       supabase.from('moveable_feasts').select('*').eq('year', year).gte('date', `${year}-${monthStr}-01`).lt('date', `${year}-${(month + 1) % 12 === 0 ? 1 : (month + 1) % 12}-01`),
+      supabase.from('historical_events').select('*').like('date_key', `${monthStr}-%`),
+      supabase.from('famous_people').select('*').like('date_key', `${monthStr}-%`),
     ]);
 
     const ndMap: Record<string, NameDay> = {};
@@ -69,6 +73,20 @@ export default function CalendarPage() {
       mfMap[dk].push(f);
     });
     setMoveableFeasts(mfMap);
+
+    const evMap: Record<string, HistoricalEvent[]> = {};
+    (ev.data || []).forEach((e: HistoricalEvent) => {
+      if (!evMap[e.date_key]) evMap[e.date_key] = [];
+      evMap[e.date_key].push(e);
+    });
+    setHistEvents(evMap);
+
+    const famMap: Record<string, FamousPerson[]> = {};
+    (fam.data || []).forEach((p: FamousPerson) => {
+      if (!famMap[p.date_key]) famMap[p.date_key] = [];
+      famMap[p.date_key].push(p);
+    });
+    setFamousPeople(famMap);
   }, []);
 
   useEffect(() => { loadMonthData(viewYear, viewMonth); }, [viewYear, viewMonth, loadMonthData]);
@@ -210,7 +228,7 @@ export default function CalendarPage() {
                       }}
                       className="w-full text-left px-3 py-2 rounded-lg hover:bg-amber-100 transition-colors flex justify-between items-center"
                     >
-                      <span className="font-medium text-gray-900">{nd.names.slice(0, 4).join(', ')}</span>
+                      <span className="font-medium text-gray-900">{nd.names.join(', ')}</span>
                       <span className="text-sm text-amber-600">{nd.date_key}</span>
                     </button>
                   ))}
@@ -298,6 +316,8 @@ export default function CalendarPage() {
               const hol = holidays[key] || [];
               const ch = churchHolidays[key] || [];
               const mf = moveableFeasts[key] || [];
+              const ev = histEvents[key] || [];
+              const fam = famousPeople[key] || [];
               const isWeekend = (firstDay + i) % 7 >= 5;
               const isHoliday = hol.length > 0 || mf.length > 0;
               const colIndex = (firstDay + i) % 7;
@@ -327,7 +347,7 @@ export default function CalendarPage() {
                     {nd && (
                       <p className="text-[9px] sm:text-[10px] text-amber-700 font-medium leading-tight truncate">
                         <Star size={8} className="inline mr-0.5" />
-                        {nd.names.slice(0, 1).join(', ')}
+                        {nd.names.join(', ')}
                       </p>
                     )}
                     {hol.length > 0 && (
@@ -347,6 +367,18 @@ export default function CalendarPage() {
                         {mf[0].name.length > 14 ? mf[0].name.slice(0, 14) + '…' : mf[0].name}
                       </p>
                     )}
+                    {ev.length > 0 && (
+                      <p className="text-[9px] sm:text-[10px] text-indigo-600 leading-tight truncate">
+                        <Globe size={8} className="inline mr-0.5" />
+                        {ev[0].title.length > 16 ? ev[0].title.slice(0, 16) + '…' : ev[0].title}
+                      </p>
+                    )}
+                    {fam.length > 0 && (
+                      <p className="text-[9px] sm:text-[10px] text-pink-600 leading-tight truncate">
+                        <User2 size={8} className="inline mr-0.5" />
+                        {fam[0].name}
+                      </p>
+                    )}
                   </div>
                 </button>
               );
@@ -361,6 +393,8 @@ export default function CalendarPage() {
             { color: 'bg-amber-100', label: 'Именен ден', icon: Star },
             { color: 'bg-red-100', label: 'Официален празник', icon: Sparkles },
             { color: 'bg-green-100', label: 'Подвижен празник', icon: Sparkles },
+            { color: 'bg-indigo-100', label: 'Историческо събитие', icon: Globe },
+            { color: 'bg-pink-100', label: 'Известна личност', icon: User2 },
             { color: 'bg-purple-100', label: 'Църковен празник' },
           ].map(({ color, label, icon: Icon }) => (
             <div key={label} className="flex items-center gap-2 text-xs text-gray-600">
