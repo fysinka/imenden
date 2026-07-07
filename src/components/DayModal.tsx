@@ -1,9 +1,8 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { X, Star, Church, Globe, BookOpen, User2, Feather, Flame, Sparkles, ArrowRight } from 'lucide-react';
+import { X, Star, Church, Globe, BookOpen, User2, Feather, Flame, Sparkles } from 'lucide-react';
 import { DayData } from '../types';
 
-const pad = (n: number) => String(n).padStart(2, '0');
 
 interface Props {
   date: Date;
@@ -186,17 +185,7 @@ export default function DayModal({ date, data, loading, onClose }: Props) {
                 </div>
               )}
 
-              {/* Link to full article */}
-              {selectedDate && (
-                <Link
-                  to={`/news/calendar-${pad(selectedDate.getMonth() + 1)}-${pad(selectedDate.getDate())}`}
-                  className="mt-4 flex items-center justify-center gap-2 w-full py-3 px-4 bg-[#c0392b] text-white rounded-xl font-medium text-sm hover:bg-[#a93222] transition-colors group"
-                >
-                  <BookOpen size={16} />
-                  Прочети пълната статия за този ден
-                  <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                </Link>
-              )}
+
             </>
           )}
         </div>
