@@ -148,6 +148,7 @@ export interface NameDay {
   date_key: string;
   names: string[];
   description?: string;
+  link?: string;
 }
 
 export interface Holiday {
@@ -156,6 +157,7 @@ export interface Holiday {
   name: string;
   type: 'national' | 'international' | 'observance';
   description?: string;
+  link?: string;
 }
 
 export interface ChurchHoliday {
@@ -165,6 +167,7 @@ export interface ChurchHoliday {
   type: string;
   description?: string;
   is_great_feast: boolean;
+  link?: string;
 }
 
 export interface MoveableFeast {
@@ -175,6 +178,7 @@ export interface MoveableFeast {
   name: string;
   description?: string;
   is_great_feast: boolean;
+  link?: string;
 }
 
 export interface HistoricalEvent {
@@ -184,6 +188,7 @@ export interface HistoricalEvent {
   title: string;
   description?: string;
   category: string;
+  link?: string;
 }
 
 export interface FamousPerson {
@@ -195,6 +200,7 @@ export interface FamousPerson {
   description?: string;
   nationality?: string;
   profession?: string;
+  link?: string;
 }
 
 export interface FolkTradition {

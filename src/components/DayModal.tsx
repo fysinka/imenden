@@ -1,8 +1,6 @@
 import { useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { X, Star, Church, Globe, BookOpen, User2, Feather, Flame, Sparkles, ArrowRight } from 'lucide-react';
 import { DayData } from '../types';
-
 
 interface Props {
   date: Date;
@@ -13,6 +11,27 @@ interface Props {
 
 const BG_MONTHS = ['Януари','Февруари','Март','Април','Май','Юни','Юли','Август','Септември','Октомври','Ноември','Декември'];
 const BG_DAYS = ['Неделя','Понеделник','Вторник','Сряда','Четвъртък','Петък','Събота'];
+
+function ArticleButton({ link, color }: { link: string; color: string }) {
+  const colorMap: Record<string, string> = {
+    amber: 'bg-amber-500 hover:bg-amber-600',
+    red: 'bg-[#c0392b] hover:bg-[#e74c3c]',
+    blue: 'bg-blue-600 hover:bg-blue-700',
+    green: 'bg-green-600 hover:bg-green-700',
+    purple: 'bg-purple-600 hover:bg-purple-700',
+    orange: 'bg-orange-500 hover:bg-orange-600',
+  };
+  return (
+    <a
+      href={link}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={`inline-flex items-center gap-1.5 mt-3 px-4 py-2 ${colorMap[color] || 'bg-gray-600 hover:bg-gray-700'} text-white text-xs font-semibold rounded-xl transition-colors`}
+    >
+      Към статията <ArrowRight size={13} />
+    </a>
+  );
+}
 
 export default function DayModal({ date, data, loading, onClose }: Props) {
   useEffect(() => {
@@ -25,7 +44,6 @@ export default function DayModal({ date, data, loading, onClose }: Props) {
     <div className="fixed inset-0 z-[200] flex items-end sm:items-center justify-center p-0 sm:p-4">
       <div className="absolute inset-0 modal-backdrop" onClick={onClose} />
       <div className="relative w-full sm:max-w-2xl max-h-[90vh] sm:max-h-[85vh] bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-scaleIn">
-        {/* Header */}
         <div className="bg-gradient-to-r from-[#1a1a2e] to-[#0f3460] px-6 py-5 shrink-0">
           <div className="flex items-start justify-between">
             <div>
@@ -67,17 +85,19 @@ export default function DayModal({ date, data, loading, onClose }: Props) {
                   {data.nameDay.description && (
                     <p className="mt-2 text-gray-600 text-sm">{data.nameDay.description}</p>
                   )}
+                  {data.nameDay.link && <ArticleButton link={data.nameDay.link} color="amber" />}
                 </Section>
               )}
 
               {/* Official holidays */}
               {data?.holidays && data.holidays.length > 0 && (
                 <Section icon={<Globe size={16} className="text-[#c0392b]" />} title="Официални празници" color="red">
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     {data.holidays.map((h) => (
                       <div key={h.id}>
                         <p className="font-medium text-gray-900 text-sm">{h.name}</p>
                         {h.description && <p className="text-gray-500 text-xs">{h.description}</p>}
+                        {h.link && <ArticleButton link={h.link} color="red" />}
                       </div>
                     ))}
                   </div>
@@ -87,13 +107,14 @@ export default function DayModal({ date, data, loading, onClose }: Props) {
               {/* Church holidays */}
               {data?.churchHolidays && data.churchHolidays.length > 0 && (
                 <Section icon={<Church size={16} className="text-blue-600" />} title="Църковни празници" color="blue">
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     {data.churchHolidays.map((h) => (
                       <div key={h.id} className="flex items-start gap-2">
                         {h.is_great_feast && <Flame size={12} className="text-orange-500 mt-0.5 shrink-0" />}
                         <div>
                           <p className="font-medium text-gray-900 text-sm">{h.name}</p>
                           {h.description && <p className="text-gray-500 text-xs">{h.description}</p>}
+                          {h.link && <ArticleButton link={h.link} color="blue" />}
                         </div>
                       </div>
                     ))}
@@ -104,13 +125,14 @@ export default function DayModal({ date, data, loading, onClose }: Props) {
               {/* Moveable feasts */}
               {data?.moveableFeasts && data.moveableFeasts.length > 0 && (
                 <Section icon={<Sparkles size={16} className="text-green-600" />} title="Подвижни празници" color="green">
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     {data.moveableFeasts.map((f) => (
                       <div key={f.id} className="flex items-start gap-2">
                         {f.is_great_feast && <Flame size={12} className="text-orange-500 mt-0.5 shrink-0" />}
                         <div>
                           <p className="font-medium text-gray-900 text-sm">{f.name}</p>
                           {f.description && <p className="text-gray-500 text-xs">{f.description}</p>}
+                          {f.link && <ArticleButton link={f.link} color="green" />}
                         </div>
                       </div>
                     ))}
@@ -129,6 +151,7 @@ export default function DayModal({ date, data, loading, onClose }: Props) {
                           {e.title}
                         </p>
                         {e.description && <p className="text-gray-500 text-xs mt-0.5">{e.description}</p>}
+                        {e.link && <ArticleButton link={e.link} color="green" />}
                       </div>
                     ))}
                   </div>
@@ -142,9 +165,7 @@ export default function DayModal({ date, data, loading, onClose }: Props) {
                     {data.famousPeople.map((p) => (
                       <div key={p.id} className="flex items-start gap-3">
                         <span className={`text-xs font-bold px-2 py-0.5 rounded-full shrink-0 ${
-                          p.event_type === 'born'
-                            ? 'bg-green-100 text-green-700'
-                            : 'bg-gray-100 text-gray-600'
+                          p.event_type === 'born' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'
                         }`}>
                           {p.event_type === 'born' ? 'Роден/а' : 'Починал/а'}
                         </span>
@@ -153,6 +174,7 @@ export default function DayModal({ date, data, loading, onClose }: Props) {
                             {p.name} {p.year && <span className="text-gray-500 font-normal">({p.year})</span>}
                           </p>
                           {p.profession && <p className="text-gray-500 text-xs">{p.profession}</p>}
+                          {p.link && <ArticleButton link={p.link} color="purple" />}
                         </div>
                       </div>
                     ))}
@@ -173,16 +195,7 @@ export default function DayModal({ date, data, loading, onClose }: Props) {
                             „{t.proverb}"
                           </blockquote>
                         )}
-                        {t.link && (
-                          <a
-                            href={t.link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 mt-3 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white text-xs font-semibold rounded-xl transition-colors"
-                          >
-                            Към статията <ArrowRight size={13} />
-                          </a>
-                        )}
+                        {t.link && <ArticleButton link={t.link} color="orange" />}
                       </div>
                     ))}
                   </div>
@@ -194,8 +207,6 @@ export default function DayModal({ date, data, loading, onClose }: Props) {
                   <p>Няма специална информация за тази дата.</p>
                 </div>
               )}
-
-
             </>
           )}
         </div>
