@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Search, X, Star, Sparkles, Calendar as CalendarIcon } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Search, X, Star, Sparkles, Calendar as CalendarIcon, BookOpen } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { NameDay, Holiday, ChurchHoliday, DayData } from '../types';
+import { NameDay, Holiday, ChurchHoliday, MoveableFeast, DayData } from '../types';
 import DayModal from '../components/DayModal';
 
 const BG_MONTHS = ['Януари','Февруари','Март','Април','Май','Юни','Юли','Август','Септември','Октомври','Ноември','Декември'];
@@ -28,6 +28,7 @@ export default function CalendarPage() {
   const [nameDays, setNameDays] = useState<Record<string, NameDay>>({});
   const [holidays, setHolidays] = useState<Record<string, Holiday[]>>({});
   const [churchHolidays, setChurchHolidays] = useState<Record<string, ChurchHoliday[]>>({});
+  const [moveableFeasts, setMoveableFeasts] = useState<Record<string, MoveableFeast[]>>({});
   const [searchDate, setSearchDate] = useState('');
   const [searchName, setSearchName] = useState('');
   const [searchResults, setSearchResults] = useState<NameDay[]>([]);
@@ -36,10 +37,11 @@ export default function CalendarPage() {
 
   const loadMonthData = useCallback(async (year: number, month: number) => {
     const monthStr = pad(month + 1);
-    const [nd, hol, ch] = await Promise.all([
+    const [nd, hol, ch, mf] = await Promise.all([
       supabase.from('name_days').select('*').like('date_key', `${monthStr}-%`),
       supabase.from('holidays').select('*').like('date_key', `${monthStr}-%`),
       supabase.from('church_holidays').select('*').like('date_key', `${monthStr}-%`),
+      supabase.from('moveable_feasts').select('*').eq('year', year).gte('date', `${year}-${monthStr}-01`).lt('date', `${year}-${(month + 1) % 12 === 0 ? 1 : (month + 1) % 12}-01`),
     ]);
 
     const ndMap: Record<string, NameDay> = {};
@@ -59,6 +61,14 @@ export default function CalendarPage() {
       chMap[h.date_key].push(h);
     });
     setChurchHolidays(chMap);
+
+    const mfMap: Record<string, MoveableFeast[]> = {};
+    (mf.data || []).forEach((f: MoveableFeast) => {
+      const dk = f.date.slice(5);
+      if (!mfMap[dk]) mfMap[dk] = [];
+      mfMap[dk].push(f);
+    });
+    setMoveableFeasts(mfMap);
   }, []);
 
   useEffect(() => { loadMonthData(viewYear, viewMonth); }, [viewYear, viewMonth, loadMonthData]);
@@ -68,10 +78,12 @@ export default function CalendarPage() {
     setLoadingDay(true);
     const key = `${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
     const month = date.getMonth() + 1;
-    const [nd, hol, ch, ev, fam, trad] = await Promise.all([
+    const dateStr = date.toISOString().slice(0, 10);
+    const [nd, hol, ch, mf, ev, fam, trad] = await Promise.all([
       supabase.from('name_days').select('*').eq('date_key', key).maybeSingle(),
       supabase.from('holidays').select('*').eq('date_key', key),
       supabase.from('church_holidays').select('*').eq('date_key', key),
+      supabase.from('moveable_feasts').select('*').eq('year', date.getFullYear()).eq('date', dateStr),
       supabase.from('historical_events').select('*').eq('date_key', key),
       supabase.from('famous_people').select('*').eq('date_key', key),
       supabase.from('folk_traditions').select('*').or(`date_key.eq.${key},month.eq.${month}`).limit(3),
@@ -80,6 +92,7 @@ export default function CalendarPage() {
       nameDay: nd.data || undefined,
       holidays: hol.data || [],
       churchHolidays: ch.data || [],
+      moveableFeasts: mf.data || [],
       historicalEvents: ev.data || [],
       famousPeople: fam.data || [],
       folkTraditions: trad.data || [],
@@ -284,8 +297,9 @@ export default function CalendarPage() {
               const nd = nameDays[key];
               const hol = holidays[key] || [];
               const ch = churchHolidays[key] || [];
+              const mf = moveableFeasts[key] || [];
               const isWeekend = (firstDay + i) % 7 >= 5;
-              const isHoliday = hol.length > 0;
+              const isHoliday = hol.length > 0 || mf.length > 0;
               const colIndex = (firstDay + i) % 7;
               const isLastCol = colIndex === 6 || i === daysInMonth - 1;
 
@@ -327,6 +341,12 @@ export default function CalendarPage() {
                         {ch[0].name.length > 12 ? ch[0].name.slice(0, 12) + '…' : ch[0].name}
                       </p>
                     )}
+                    {mf.length > 0 && !hol.length && (
+                      <p className="text-[9px] sm:text-[10px] text-green-600 font-medium leading-tight truncate">
+                        <Sparkles size={8} className="inline mr-0.5" />
+                        {mf[0].name.length > 14 ? mf[0].name.slice(0, 14) + '…' : mf[0].name}
+                      </p>
+                    )}
                   </div>
                 </button>
               );
@@ -340,6 +360,7 @@ export default function CalendarPage() {
             { color: 'bg-gradient-to-br from-amber-500 to-orange-500', label: 'Днес' },
             { color: 'bg-amber-100', label: 'Именен ден', icon: Star },
             { color: 'bg-red-100', label: 'Официален празник', icon: Sparkles },
+            { color: 'bg-green-100', label: 'Подвижен празник', icon: Sparkles },
             { color: 'bg-purple-100', label: 'Църковен празник' },
           ].map(({ color, label, icon: Icon }) => (
             <div key={label} className="flex items-center gap-2 text-xs text-gray-600">

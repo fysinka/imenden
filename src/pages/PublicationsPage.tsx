@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase';
 import { Publication } from '../types';
 import { Search, Newspaper, Calendar, Eye } from 'lucide-react';
 
-const CATEGORIES = ['Всички', 'традиции', 'история', 'религия', 'именни дни', 'general'];
+const CATEGORIES = ['Всички', 'календар', 'традиции', 'история', 'религия', 'именни дни', 'general'];
 
 export default function PublicationsPage() {
   const [publications, setPublications] = useState<Publication[]>([]);

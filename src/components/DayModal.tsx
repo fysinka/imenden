@@ -1,6 +1,9 @@
 import { useEffect } from 'react';
-import { X, Star, Church, Globe, BookOpen, User2, Feather, Flame } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { X, Star, Church, Globe, BookOpen, User2, Feather, Flame, Sparkles, ArrowRight } from 'lucide-react';
 import { DayData } from '../types';
+
+const pad = (n: number) => String(n).padStart(2, '0');
 
 interface Props {
   date: Date;
@@ -99,6 +102,23 @@ export default function DayModal({ date, data, loading, onClose }: Props) {
                 </Section>
               )}
 
+              {/* Moveable feasts */}
+              {data?.moveableFeasts && data.moveableFeasts.length > 0 && (
+                <Section icon={<Sparkles size={16} className="text-green-600" />} title="Подвижни празници" color="green">
+                  <div className="space-y-2">
+                    {data.moveableFeasts.map((f) => (
+                      <div key={f.id} className="flex items-start gap-2">
+                        {f.is_great_feast && <Flame size={12} className="text-orange-500 mt-0.5 shrink-0" />}
+                        <div>
+                          <p className="font-medium text-gray-900 text-sm">{f.name}</p>
+                          {f.description && <p className="text-gray-500 text-xs">{f.description}</p>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </Section>
+              )}
+
               {/* Historical events */}
               {data?.historicalEvents && data.historicalEvents.length > 0 && (
                 <Section icon={<BookOpen size={16} className="text-green-600" />} title="Исторически събития" color="green">
@@ -160,10 +180,22 @@ export default function DayModal({ date, data, loading, onClose }: Props) {
                 </Section>
               )}
 
-              {!data?.nameDay && !data?.holidays?.length && !data?.churchHolidays?.length && (
+              {!data?.nameDay && !data?.holidays?.length && !data?.churchHolidays?.length && !data?.moveableFeasts?.length && (
                 <div className="text-center py-8 text-gray-400">
                   <p>Няма специална информация за тази дата.</p>
                 </div>
+              )}
+
+              {/* Link to full article */}
+              {selectedDate && (
+                <Link
+                  to={`/news/calendar-${pad(selectedDate.getMonth() + 1)}-${pad(selectedDate.getDate())}`}
+                  className="mt-4 flex items-center justify-center gap-2 w-full py-3 px-4 bg-[#c0392b] text-white rounded-xl font-medium text-sm hover:bg-[#a93222] transition-colors group"
+                >
+                  <BookOpen size={16} />
+                  Прочети пълната статия за този ден
+                  <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                </Link>
               )}
             </>
           )}

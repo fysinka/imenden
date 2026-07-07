@@ -167,6 +167,16 @@ export interface ChurchHoliday {
   is_great_feast: boolean;
 }
 
+export interface MoveableFeast {
+  id: string;
+  feast_key: string;
+  year: number;
+  date: string;
+  name: string;
+  description?: string;
+  is_great_feast: boolean;
+}
+
 export interface HistoricalEvent {
   id: string;
   date_key: string;
@@ -201,6 +211,7 @@ export interface DayData {
   nameDay?: NameDay;
   holidays: Holiday[];
   churchHolidays: ChurchHoliday[];
+  moveableFeasts: MoveableFeast[];
   historicalEvents: HistoricalEvent[];
   famousPeople: FamousPerson[];
   folkTraditions: FolkTradition[];
