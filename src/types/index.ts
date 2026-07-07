@@ -67,6 +67,21 @@ export interface CartItem {
   customization?: TshirtCustomization;
 }
 
+export interface DesignElement {
+  id: string;
+  type: 'text' | 'image' | 'shape';
+  content: string;
+  x: number;
+  y: number;
+  width?: number;
+  height?: number;
+  fontSize?: number;
+  fontFamily?: string;
+  color?: string;
+  rotation?: number;
+  opacity?: number;
+}
+
 export interface TshirtCustomization {
   size: string;
   color: ProductColor;
@@ -76,6 +91,7 @@ export interface TshirtCustomization {
   fontFamily?: string;
   textColor?: string;
   note?: string;
+  designElements?: DesignElement[];
 }
 
 export interface Order {
